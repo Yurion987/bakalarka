@@ -1,0 +1,6 @@
+[0304/131930.465:ERROR:process_reader_win.cc(123)] NtOpenThread: {Pøístup byl odepøen} Proces požadoval pøístup k objektu, ale nebyla mu udìlena odpovídající pøístupová práva. (0xc0000022)
+[0304/131930.466:ERROR:exception_snapshot_win.cc(88)] thread ID 6548 not found in process
+[0304/131930.466:WARNING:crash_report_exception_handler.cc(62)] ProcessSnapshotWin::Initialize failed
+[0304/131942.055:ERROR:process_reader_win.cc(123)] NtOpenThread: {Pøístup byl odepøen} Proces požadoval pøístup k objektu, ale nebyla mu udìlena odpovídající pøístupová práva. (0xc0000022)
+[0304/131942.056:ERROR:exception_snapshot_win.cc(88)] thread ID 2676 not found in process
+[0304/131942.056:WARNING:crash_report_exception_handler.cc(62)] ProcessSnapshotWin::Initialize failed
