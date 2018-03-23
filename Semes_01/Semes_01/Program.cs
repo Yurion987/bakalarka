@@ -76,21 +76,21 @@ namespace Semes_01
         }
         public void rozparsuj_WebStranku() {
             //posledny je button
-            var clasSec = driver.FindElements(By.ClassName("section"));
+            var sekciaPrichodov = driver.FindElements(By.ClassName("section"));
            
-            for (int i = 0; i < clasSec.Count - 1; i++)
+            for (int i = 0; i < sekciaPrichodov.Count - 1; i++)
             {
                 //dostanie datumu zo stranky
-                var datum = clasSec[i].FindElement(By.ClassName("before_day")).Text;
-                var datumMin = clasSec[i].FindElement(By.ClassName("small_day")).Text;
-                foreach (var item in clasSec[i].FindElements(By.Id("timeline")))
+                var datum = sekciaPrichodov[i].FindElement(By.ClassName("before_day")).Text;
+                var datumMin = sekciaPrichodov[i].FindElement(By.ClassName("small_day")).Text;
+                foreach (IWebElement konkretnyDen in sekciaPrichodov[i].FindElements(By.Id("timeline")))
                 {
 
-                    foreach (var item2 in item.FindElements(By.ClassName("ON")))
+                    foreach (IWebElement konkretnyZaznam in konkretnyDen.FindElements(By.ClassName("ON")))
                     {
 
-                        string meno = item2.FindElement(By.ClassName("name")).Text;
-                        string cas = item2.FindElement(By.ClassName("time")).Text;
+                        string meno = konkretnyZaznam.FindElement(By.ClassName("name")).Text;
+                        string cas = konkretnyZaznam.FindElement(By.ClassName("time")).Text;
                         if (datumMin != "")
                         {
                             tabulkaZWebStranky.Add(datumMin);
