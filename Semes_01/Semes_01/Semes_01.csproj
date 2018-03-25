@@ -95,7 +95,7 @@
   <ItemGroup>
     <Compile Include="Databazka.cs" />
     <Compile Include="Hlavna.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Zaznam.cs" />
   </ItemGroup>

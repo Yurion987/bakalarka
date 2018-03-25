@@ -17,6 +17,10 @@ namespace Semes_01
         List<List<string>> tabulkaZoSuboru;
         IWebDriver driver;
         List<Zaznam> tabulkaZWebStranky;
+
+        public List<List<string>> TabulkaZoSuboru { get => tabulkaZoSuboru; set => tabulkaZoSuboru = value; }
+        public List<Zaznam> TabulkaZWebStranky { get => tabulkaZWebStranky; set => tabulkaZWebStranky = value; }
+
         public LoadData()
         {
             FirefoxOptions fo = new FirefoxOptions();
@@ -76,16 +80,16 @@ namespace Semes_01
                     string cas = konkretnyZaznam.FindElement(By.ClassName("time")).Text;
                     if (datumMin != "")
                     {
-                   
-                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datumMin),cas,""));
+
+                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datumMin), cas , ""));
                     }
                     else
                     {
-                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datum),cas,""));
+                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datum), cas , ""));
                     }
                 }
 
-            }  
+            }
         }
         public void nacitajStranku()
         {
@@ -151,55 +155,58 @@ namespace Semes_01
                     originDatum[1] = "00";
                     break;
             }
-            string celyDatum= "";
+            string celyDatum = "";
             for (int i = 0; i < originDatum.Length; i++)
             {
                 if (i < 2)
                 {
-                    celyDatum += originDatum[i] + "-";
+                    celyDatum += originDatum[i] + ".";
                 }
                 else {
                     celyDatum += originDatum[i];
                     break;
-                }    
-                
+                }
+
             }
-            
+
             return celyDatum;
         }
         public void naplnTypZaznamu() {
-            string poslednyMesiac = tabulkaZWebStranky[tabulkaZWebStranky.Count - 1].Datum.Substring(0,2);
+            string poslednyDen = tabulkaZWebStranky[tabulkaZWebStranky.Count - 1].Datum.Substring(0, 2);
             int kolkoVymazadOdKonca = 0;
-            for (int i = tabulkaZWebStranky.Count-1; i >=0; i--)
+            for (int i = tabulkaZWebStranky.Count - 1; i >= 0; i--)
             {
-                if (tabulkaZWebStranky[i].Datum.Substring(0, 2).Equals(poslednyMesiac)) {
+                if (tabulkaZWebStranky[i].Datum.Substring(0, 2).Equals(poslednyDen)) {
                     kolkoVymazadOdKonca++;
                 }
                 else
                 {
                     break;
                 }
-                
+
             }
             tabulkaZWebStranky.RemoveRange(tabulkaZWebStranky.Count - kolkoVymazadOdKonca, kolkoVymazadOdKonca);
-
-
             tabulkaZWebStranky.Reverse();
+
             for (int i = 0; i < tabulkaZWebStranky.Count; i++)
             {
-
-                for (int j = i-1; j >= 0; j--)
+                for (int j = i - 1; j >= 0; j--)
                 {
                     if (tabulkaZWebStranky[i].Meno.Equals(tabulkaZWebStranky[j].Meno) && tabulkaZWebStranky[j].Typ.Equals("odchod"))
                     {
                         tabulkaZWebStranky[i].Typ = "prichod";
                         break;
                     }
-                    else if (tabulkaZWebStranky[i].Meno.Equals(tabulkaZWebStranky[j].Meno) &&  tabulkaZWebStranky[j].Typ.Equals("prichod"))  {
+                    else if (tabulkaZWebStranky[i].Meno.Equals(tabulkaZWebStranky[j].Meno) && tabulkaZWebStranky[j].Typ.Equals("prichod"))
+                    {
                         tabulkaZWebStranky[i].Typ = "odchod";
                         break;
                     }
-                   
+                    else if (!tabulkaZWebStranky[i].Datum.Equals(tabulkaZWebStranky[j].Datum))
+                    {
+                        break;
+                    }
+
                 }
                 if (tabulkaZWebStranky[i].Typ.Equals(""))
                 {
@@ -210,11 +217,23 @@ namespace Semes_01
             Console.WriteLine("\n");
             for (int i = 0; i < tabulkaZWebStranky.Count; i++)
             {
-                if (i!= 0 && !tabulkaZWebStranky[i].Datum.Equals(tabulkaZWebStranky[i - 1].Datum)) Console.WriteLine("\n"+tabulkaZWebStranky[i].Datum);   
-                if(i==0) Console.WriteLine(tabulkaZWebStranky[i].Datum);
+                if (i != 0 && !tabulkaZWebStranky[i].Datum.Equals(tabulkaZWebStranky[i - 1].Datum)) Console.WriteLine("\n" + tabulkaZWebStranky[i].Datum);
+                if (i == 0) Console.WriteLine(tabulkaZWebStranky[i].Datum);
+
                 Console.WriteLine(tabulkaZWebStranky[i].Meno + " " + tabulkaZWebStranky[i].Cas + " " + tabulkaZWebStranky[i].Typ);
             }
-           
+
+        }
+        public void naplnSekundy ()
+        {
+            for (int i = 1; i < tabulkaZWebStranky.Count; i++)
+            {
+                int sekundy = Int32.Parse(tabulkaZWebStranky[i].Cas.Substring(tabulkaZWebStranky[i].Cas.Length - 2,2));
+                if (sekundy == Int32.Parse(tabulkaZWebStranky[i-1].Cas.Substring(tabulkaZWebStranky[i-1].Cas.Length - 2, 2)))
+                {
+
+                }
+            }
         }
     }
 }

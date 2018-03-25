@@ -17,19 +17,62 @@ namespace Semes_01
             this.conection = new OracleConnection(conStr);
             this.conection.Open();
         }
-        private void insertData(string tabulka) {
-            
-        }
-        private bool kontrolaOriginality(string tabulka,string stlpec, string data) {
+        public void insertData(List<Zaznam> data)
+        {
+            OracleCommand orclCom = new OracleCommand();
+            orclCom.Connection = conection;
+            foreach (var item in data)
+            {
 
-            string comand = "select * from "+tabulka+" where " + stlpec + "= '"+data+"'";
-            OracleCommand orclCom = new OracleCommand(comand,conection);
+                if (kontrolaOriginalityMena(item.Meno))
+                {
+                    orclCom.CommandText = "insert into pouzivatel (meno,heslo) values('" + item.Meno + "',' ')";
+                    orclCom.ExecuteNonQuery();
+                }
+
+                orclCom.CommandText = "select id_pouzivatela from pouzivatel where meno = '" + item.Meno + "'";
+                OracleDataReader orclReader = orclCom.ExecuteReader();
+                int ID = -1;
+                if (orclReader.Read())
+                {
+                    ID = Int32.Parse(orclReader["id_pouzivatela"].ToString());
+                }
+                if (ID != -1 && kontrolaOriginalityZaznamu(item.Cas, item.Datum, ID))
+                {
+                    orclCom.CommandText = "insert into zaznam (pouzivatel,cas,typ) " +
+                        "values (" + ID + ",TO_DATE('" + item.Datum + " " + item.Cas + "','dd.mm.yyyy hh24:mi'),'" + item.Typ + "')";
+                    orclCom.ExecuteNonQuery();
+
+                }
+
+            }
+
+
+        }
+        private bool kontrolaOriginalityMena(string data)
+        {
+
+            string comand = "select * from pouzivatel where meno = '" + data + "'";
+            OracleCommand orclCom = new OracleCommand(comand, conection);
 
             OracleDataReader orclReader = orclCom.ExecuteReader();
-            if(orclReader.HasRows){
-                return true;
+            if (orclReader.HasRows)
+            {
+                return false;
             }
-            return false;
+            return true;
+        }
+        private bool kontrolaOriginalityZaznamu(string cas, string datum, int ID)
+        {
+            string comand = "select * from zaznam where cas = TO_DATE('" + datum + " " + cas + "','dd.mm.yyyy hh24:mi') and pouzivatel = " + ID + "";
+            OracleCommand orclCom = new OracleCommand(comand, conection);
+
+            OracleDataReader orclReader = orclCom.ExecuteReader();
+            if (orclReader.HasRows)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
