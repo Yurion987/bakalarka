@@ -14,57 +14,69 @@ namespace Semes_01
     class LoadData
     {
 
-        List<List<string>> tabulkaZoSuboru;
-        IWebDriver driver;
-        List<Zaznam> tabulkaZWebStranky;
+       private List<Zaznam> tabulkaZoSuboru;
+       private List<Zaznam> tabulkaZWebStranky;
+       private IWebDriver driver;
 
-        public List<List<string>> TabulkaZoSuboru { get => tabulkaZoSuboru; set => tabulkaZoSuboru = value; }
+        public List<Zaznam> TabulkaZoSuboru { get => tabulkaZoSuboru; set => tabulkaZoSuboru = value; }
         public List<Zaznam> TabulkaZWebStranky { get => tabulkaZWebStranky; set => tabulkaZWebStranky = value; }
 
         public LoadData()
         {
-            FirefoxOptions fo = new FirefoxOptions();
-            fo.AddArgument("--headless");
-            driver = new FirefoxDriver(fo);
             this.tabulkaZWebStranky = new List<Zaznam>();
-            this.tabulkaZoSuboru = new List<List<string>>();
+            this.tabulkaZoSuboru = new List<Zaznam>();
+            driver = null;
 
         }
 
-        public void parsingTable()
+        public void parsingTable(string cesta)
         {
             HtmlDocument htmlDoc = new HtmlDocument();
-            string html = System.IO.File.ReadAllText(@"C:\Users\Yurion\source\repos\Semes_01\Semes_01\doch_november.html");
+            string html = System.IO.File.ReadAllText(@cesta);
             htmlDoc.LoadHtml(html);
             foreach (HtmlNode row in htmlDoc.DocumentNode.SelectNodes("/html/body/table/tr").Skip(1))
             {
-                tabulkaZoSuboru.Add(new List<string>());
                 int stop = 0;
-                foreach (HtmlNode cell in row.SelectNodes("th|td"))
-                {
-                    if (stop != 3)
+                string meno = "";
+                string cas = "";
+                foreach (HtmlNode cell in row.SelectNodes("th|td").Skip(1))
+                {      
+                    if (stop != 2)
                     {
                         string bunka = cell.InnerHtml;
-                        if (stop == 2)
+                        if (stop == 1)
                         {
-                            bunka = bunka.Substring(9, bunka.Length - 9);
-                            string ID = bunka.Substring(0, bunka.IndexOf(":"));
-                            tabulkaZoSuboru[tabulkaZoSuboru.Count - 1].Add(ID);
-                            bunka = bunka.Substring(bunka.IndexOf(" "), bunka.Length - bunka.IndexOf(" "));
+                            if (!bunka.Contains("ústredňa"))
+                            {
+                                meno = bunka.Substring(bunka.IndexOf(":") + 2);
+                                // bunka.Length - bunka.IndexOf(":") - 2
+                            }
                         }
-                        tabulkaZoSuboru[tabulkaZoSuboru.Count - 1].Add(bunka);
+                        else {
+                           cas = bunka;
+                        }                       
 
                         stop++;
                     }
                     else
                     {
-                        break;
+                        if (!meno.Equals("")) {
+                            string datum = formatuj_Datum(cas.Substring(0, cas.IndexOf(":") - 2));
+                            cas = cas.Substring(cas.Length - 8,5);
+                            if (cas[0] == ' ') cas = "0" + cas.Substring(1);
+                            tabulkaZoSuboru.Add(new Zaznam(meno, datum, cas,""));
+                            break;
+                        }
+                      
                     }
                 }
+                
             }
         }
         public void rozparsuj_WebStranku()
         {
+            
+
             //posledny je button
             var sekciaPrichodov = driver.FindElements(By.ClassName("section"));
 
@@ -90,19 +102,25 @@ namespace Semes_01
                 }
 
             }
+            
         }
         public void nacitajStranku()
         {
             int pocetLoadZaznamov = 4;
+            if (driver == null) {
+                FirefoxOptions fo = new FirefoxOptions();
+                fo.AddArgument("--headless");
+                driver = new FirefoxDriver(fo);
+                driver.Navigate().GoToUrl("https://www.jablonet.net/");
+                driver.FindElement(By.Id("login-opener")).Click();
+                driver.FindElement(By.Id("login-email")).SendKeys("uhrin9@stud.uniza.sk");
+                driver.FindElement(By.Id("login-heslo")).SendKeys("DGbfhk");
+                driver.FindElement(By.Id("loginButton")).Click();
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(50));
+                driver.Navigate().GoToUrl("https://www.jablonet.net/app/ja100?service=257168");
+                wait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("more_info_icon")));
+            }
 
-            driver.Navigate().GoToUrl("https://www.jablonet.net/");
-            driver.FindElement(By.Id("login-opener")).Click();
-            driver.FindElement(By.Id("login-email")).SendKeys("uhrin9@stud.uniza.sk");
-            driver.FindElement(By.Id("login-heslo")).SendKeys("DGbfhk");
-            driver.FindElement(By.Id("loginButton")).Click();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(50));
-            driver.Navigate().GoToUrl("https://www.jablonet.net/app/ja100?service=257168");
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("more_info_icon")));
             for (int i = 0; i < pocetLoadZaznamov; i++)
             {
                 driver.FindElement(By.ClassName("more_info_icon")).Click();
@@ -113,46 +131,58 @@ namespace Semes_01
             datum = Regex.Replace(datum, "[^A-Za-z0-9 ]", "");
             var originDatum = datum.Split(' ');
             if (originDatum[0].Length != 2) originDatum[0] = "0" + originDatum[0];
+           
             switch (originDatum[1])
             {
                 case "January":
+                case "1":
                     originDatum[1] = "01";
                     break;
                 case "February":
+                case "2":
                     originDatum[1] = "02";
                     break;
                 case "March":
+                case "3":
                     originDatum[1] = "03";
                     break;
                 case "April":
+                case "4":
                     originDatum[1] = "04";
                     break;
                 case "May":
+                case "5":
                     originDatum[1] = "05";
                     break;
                 case "June":
+                case "6":
                     originDatum[1] = "06";
                     break;
                 case "July":
+                case "7":
                     originDatum[1] = "07";
                     break;
                 case "August":
+                case "8":
                     originDatum[1] = "08";
                     break;
                 case "September":
+                case "9":
                     originDatum[1] = "09";
                     break;
                 case "October":
+                case "10":
                     originDatum[1] = "10";
                     break;
                 case "November":
+                case "11":
                     originDatum[1] = "11";
                     break;
                 case "December":
+                case "12":
                     originDatum[1] = "12";
                     break;
                 default:
-                    originDatum[1] = "00";
                     break;
             }
             string celyDatum = "";
@@ -171,7 +201,7 @@ namespace Semes_01
 
             return celyDatum;
         }
-        public void naplnTypZaznamu() {
+        public void naplnTypZaznamuWeb() {
             string poslednyDen = tabulkaZWebStranky[tabulkaZWebStranky.Count - 1].Datum.Substring(0, 2);
             int kolkoVymazadOdKonca = 0;
             for (int i = tabulkaZWebStranky.Count - 1; i >= 0; i--)
@@ -213,27 +243,39 @@ namespace Semes_01
                     tabulkaZWebStranky[i].Typ = "prichod";
                 }
 
-            }
-            Console.WriteLine("\n");
-            for (int i = 0; i < tabulkaZWebStranky.Count; i++)
-            {
-                if (i != 0 && !tabulkaZWebStranky[i].Datum.Equals(tabulkaZWebStranky[i - 1].Datum)) Console.WriteLine("\n" + tabulkaZWebStranky[i].Datum);
-                if (i == 0) Console.WriteLine(tabulkaZWebStranky[i].Datum);
-
-                Console.WriteLine(tabulkaZWebStranky[i].Meno + " " + tabulkaZWebStranky[i].Cas + " " + tabulkaZWebStranky[i].Typ);
-            }
-
+            }      
         }
-        public void naplnSekundy ()
-        {
-            for (int i = 1; i < tabulkaZWebStranky.Count; i++)
+        public void naplnTypZaznamuSubor() {
+            for (int i = 0; i < TabulkaZoSuboru.Count; i++)
             {
-                int sekundy = Int32.Parse(tabulkaZWebStranky[i].Cas.Substring(tabulkaZWebStranky[i].Cas.Length - 2,2));
-                if (sekundy == Int32.Parse(tabulkaZWebStranky[i-1].Cas.Substring(tabulkaZWebStranky[i-1].Cas.Length - 2, 2)))
+                for (int j = i - 1; j >= 0; j--)
                 {
+                    if (TabulkaZoSuboru[i].Meno.Equals(TabulkaZoSuboru[j].Meno) && TabulkaZoSuboru[j].Typ.Equals("odchod"))
+                    {
+                        TabulkaZoSuboru[i].Typ = "prichod";
+                        break;
+                    }
+                    else if (TabulkaZoSuboru[i].Meno.Equals(TabulkaZoSuboru[j].Meno) && TabulkaZoSuboru[j].Typ.Equals("prichod"))
+                    {
+                        TabulkaZoSuboru[i].Typ = "odchod";
+                        break;
+                    }
+                    else if (!TabulkaZoSuboru[i].Datum.Equals(TabulkaZoSuboru[j].Datum))
+                    {
+                        break;
+                    }
 
                 }
+                if (TabulkaZoSuboru[i].Typ.Equals(""))
+                {
+                    TabulkaZoSuboru[i].Typ = "prichod";
+                }
+
             }
+        }
+        public void clearData() {
+            TabulkaZoSuboru.Clear();
+            tabulkaZWebStranky.Clear();
         }
     }
 }

@@ -29,6 +29,7 @@ D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\HtmlAgilityPack.dll
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\IAsyncWebBrowserClient.dll
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\Newtonsoft.Json.dll
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\nunit.framework.dll
+D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\Oracle.ManagedDataAccess.dll
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\WebBrowserCommunication.dll
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\WebDriver.dll
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\WebDriver.Support.dll
@@ -38,8 +39,12 @@ D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\Newtonsoft.Json.xml
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\nunit.framework.xml
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\WebDriver.xml
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\WebDriver.Support.xml
-D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.csprojResolveAssemblyReference.cache
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.csproj.CoreCompileInputs.cache
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.exe
 D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.pdb
-D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\Oracle.ManagedDataAccess.dll
+D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.csprojResolveAssemblyReference.cache
+D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.GUI.resources
+D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.csproj.GenerateResource.Cache
+D:\GitProjekt\bakalarka\Semes_01\Semes_01\obj\Debug\Semes_01.Properties.Resources.resources
+D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\Microsoft.QualityTools.Testing.Fakes.dll
+D:\GitProjekt\bakalarka\Semes_01\Semes_01\bin\Debug\cs\Microsoft.QualityTools.Testing.Fakes.resources.dll

@@ -10,6 +10,7 @@ namespace Semes_01
     class Databazka
     {
         OracleConnection conection;
+        
         public Databazka()
         {
             string conStr = "Data Source=(DESCRIPTION =(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST = obelix.fri.uniza.sk)(PORT = 1521)))"
@@ -21,6 +22,7 @@ namespace Semes_01
         {
             OracleCommand orclCom = new OracleCommand();
             orclCom.Connection = conection;
+            OracleDataReader orclReader = null;
             foreach (var item in data)
             {
 
@@ -31,7 +33,7 @@ namespace Semes_01
                 }
 
                 orclCom.CommandText = "select id_pouzivatela from pouzivatel where meno = '" + item.Meno + "'";
-                OracleDataReader orclReader = orclCom.ExecuteReader();
+                orclReader = orclCom.ExecuteReader();
                 int ID = -1;
                 if (orclReader.Read())
                 {
@@ -44,10 +46,13 @@ namespace Semes_01
                     orclCom.ExecuteNonQuery();
 
                 }
-
+                orclReader.Close();
             }
 
 
+        }
+        public void odpoj() {
+            conection.Clone();
         }
         private bool kontrolaOriginalityMena(string data)
         {
@@ -58,8 +63,10 @@ namespace Semes_01
             OracleDataReader orclReader = orclCom.ExecuteReader();
             if (orclReader.HasRows)
             {
+                orclReader.Close();
                 return false;
             }
+            orclReader.Close();
             return true;
         }
         private bool kontrolaOriginalityZaznamu(string cas, string datum, int ID)
@@ -70,8 +77,10 @@ namespace Semes_01
             OracleDataReader orclReader = orclCom.ExecuteReader();
             if (orclReader.HasRows)
             {
+                orclReader.Close();
                 return false;
             }
+            orclReader.Close();
             return true;
         }
     }
