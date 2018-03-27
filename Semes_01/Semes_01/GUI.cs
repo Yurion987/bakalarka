@@ -16,7 +16,7 @@ namespace Semes_01
     public partial class GUI : Form
     {
         private LoadData ld;
-        private Databazka db; 
+        private Databazka db;
         public GUI()
         {
             ld = new LoadData();
@@ -31,7 +31,8 @@ namespace Semes_01
             fileDialog.Filter = "html files (*.html)|*.html";
             fileDialog.ShowDialog();
             string nazovSuboru = fileDialog.FileName;
-            if (!nazovSuboru.Equals("")) {
+            if (!nazovSuboru.Equals(""))
+            {
                 ld.parsingTable(nazovSuboru);
                 ld.naplnTypZaznamuSubor();
                 MessageBox.Show("uspesne nacitanie zo suboru");
@@ -45,29 +46,19 @@ namespace Semes_01
 
         private void label3_Click_1(object sender, EventArgs e)
         {
-         /*   var cestaDoGecko = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var zlozkyPath = Environment.GetEnvironmentVariable("PATH");
-            bool existujeCesta = false;
-            foreach (var cesta in zlozkyPath.Split(';'))
-            {
-                var celaCesta = Path.Combine(cesta,"geckodriver");
-                if (File.Exists(celaCesta)) {
-                    existujeCesta = true;
-                    break;
-                }
-            }
-            if (!existujeCesta) {
-                var nazovKlucu = "PATH";
-                var preKoho = EnvironmentVariableTarget.Machine;
-                System.Environment.SetEnvironmentVariable(nazovKlucu, cestaDoGecko, preKoho);
-            }*/
+
             db.odpoj();
-            if(ld.Driver != null) ld.Driver.Close();
+            if (ld.Driver != null)
+            {
+                ld.Driver.Close();
+                ld.Driver.Quit();
+            }
             this.Close();
         }
 
         private void label2_Click(object sender, EventArgs e)
         {
+            label2.Enabled = false;
             ld.nacitajStranku();
             MessageBox.Show("stranka uspesne nacitana");
             ld.rozparsuj_WebStranku();
@@ -76,6 +67,7 @@ namespace Semes_01
             db.insertData(ld.TabulkaZWebStranky);
             MessageBox.Show("stranka insertnute");
             ld.clearData();
+            label2.Enabled = true;
         }
     }
 }

@@ -15,9 +15,9 @@ namespace Semes_01
     class LoadData
     {
 
-       private List<Zaznam> tabulkaZoSuboru;
-       private List<Zaznam> tabulkaZWebStranky;
-       private IWebDriver driver;
+        private List<Zaznam> tabulkaZoSuboru;
+        private List<Zaznam> tabulkaZWebStranky;
+        private IWebDriver driver;
 
         public List<Zaznam> TabulkaZoSuboru { get => tabulkaZoSuboru; set => tabulkaZoSuboru = value; }
         public List<Zaznam> TabulkaZWebStranky { get => tabulkaZWebStranky; set => tabulkaZWebStranky = value; }
@@ -35,54 +35,54 @@ namespace Semes_01
         {
 
 
-                HtmlDocument htmlDoc = new HtmlDocument();
-                string html = System.IO.File.ReadAllText(@cesta);
-                htmlDoc.LoadHtml(html);
-                foreach (HtmlNode row in htmlDoc.DocumentNode.SelectNodes("/html/body/table/tr").Skip(1))
+            HtmlDocument htmlDoc = new HtmlDocument();
+            string html = System.IO.File.ReadAllText(@cesta);
+            htmlDoc.LoadHtml(html);
+            foreach (HtmlNode row in htmlDoc.DocumentNode.SelectNodes("/html/body/table/tr").Skip(1))
+            {
+                int stop = 0;
+                string meno = "";
+                string cas = "";
+                foreach (HtmlNode cell in row.SelectNodes("th|td").Skip(1))
                 {
-                    int stop = 0;
-                    string meno = "";
-                    string cas = "";
-                    foreach (HtmlNode cell in row.SelectNodes("th|td").Skip(1))
+                    if (stop != 2)
                     {
-                        if (stop != 2)
+                        string bunka = cell.InnerHtml;
+                        if (stop == 1)
                         {
-                            string bunka = cell.InnerHtml;
-                            if (stop == 1)
+                            if (!bunka.Contains("ústredňa"))
                             {
-                                if (!bunka.Contains("ústredňa"))
-                                {
-                                    meno = bunka.Substring(bunka.IndexOf(":") + 2);
-                                    // bunka.Length - bunka.IndexOf(":") - 2
-                                }
+                                meno = bunka.Substring(bunka.IndexOf(":") + 2);
+                                // bunka.Length - bunka.IndexOf(":") - 2
                             }
-                            else
-                            {
-                                cas = bunka;
-                            }
-
-                            stop++;
                         }
                         else
                         {
-                            if (!meno.Equals(""))
-                            {
-                                string datum = formatuj_Datum(cas.Substring(0, cas.IndexOf(":") - 2));
-                                cas = cas.Substring(cas.Length - 8, 5);
-                                if (cas[0] == ' ') cas = "0" + cas.Substring(1);
-                                tabulkaZoSuboru.Add(new Zaznam(meno, datum, cas, ""));
-                                break;
-                            }
-
+                            cas = bunka;
                         }
-                    }
 
-                
+                        stop++;
+                    }
+                    else
+                    {
+                        if (!meno.Equals(""))
+                        {
+                            string datum = formatuj_Datum(cas.Substring(0, cas.IndexOf(":") - 2));
+                            cas = cas.Substring(cas.Length - 8, 5);
+                            if (cas[0] == ' ') cas = "0" + cas.Substring(1);
+                            tabulkaZoSuboru.Add(new Zaznam(meno, datum, cas, ""));
+                            break;
+                        }
+
+                    }
+                }
+
+
             }
         }
         public void rozparsuj_WebStranku()
         {
-            
+
 
             //posledny je button
             var sekciaPrichodov = driver.FindElements(By.ClassName("section"));
@@ -100,33 +100,35 @@ namespace Semes_01
                     if (datumMin != "")
                     {
 
-                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datumMin), cas , ""));
+                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datumMin), cas, ""));
                     }
                     else
                     {
-                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datum), cas , ""));
+                        tabulkaZWebStranky.Add(new Zaznam(meno, formatuj_Datum(datum), cas, ""));
                     }
                 }
 
             }
-            
+
         }
+
         public void nacitajStranku()
         {
             int pocetLoadZaznamov = 4;
-            if (driver == null) {
-                var cestaDoGecko = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            if (driver == null)
+            {
+                string cestaDoGecko = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                FirefoxDriverService fs = FirefoxDriverService.CreateDefaultService(cestaDoGecko);
+                fs.HideCommandPromptWindow = true;
                 FirefoxOptions fo = new FirefoxOptions();
                 fo.AddArgument("--headless");
-                driver = new FirefoxDriver(cestaDoGecko, fo);
+                driver = new FirefoxDriver(fs, fo, TimeSpan.FromSeconds(50));
                 driver.Navigate().GoToUrl("https://www.jablonet.net/");
                 driver.FindElement(By.Id("login-opener")).Click();
                 driver.FindElement(By.Id("login-email")).SendKeys("uhrin9@stud.uniza.sk");
                 driver.FindElement(By.Id("login-heslo")).SendKeys("DGbfhk");
                 driver.FindElement(By.Id("loginButton")).Click();
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(50));
                 driver.Navigate().GoToUrl("https://www.jablonet.net/app/ja100?service=257168");
-                wait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("more_info_icon")));
             }
 
             for (int i = 0; i < pocetLoadZaznamov; i++)
@@ -135,11 +137,12 @@ namespace Semes_01
                 System.Threading.Thread.Sleep(1500);
             }
         }
-        public string formatuj_Datum(string datum) {
+        public string formatuj_Datum(string datum)
+        {
             datum = Regex.Replace(datum, "[^A-Za-z0-9 ]", "");
             var originDatum = datum.Split(' ');
             if (originDatum[0].Length != 2) originDatum[0] = "0" + originDatum[0];
-           
+
             switch (originDatum[1])
             {
                 case "January":
@@ -200,7 +203,8 @@ namespace Semes_01
                 {
                     celyDatum += originDatum[i] + ".";
                 }
-                else {
+                else
+                {
                     celyDatum += originDatum[i];
                     break;
                 }
@@ -209,12 +213,14 @@ namespace Semes_01
 
             return celyDatum;
         }
-        public void naplnTypZaznamuWeb() {
+        public void naplnTypZaznamuWeb()
+        {
             string poslednyDen = tabulkaZWebStranky[tabulkaZWebStranky.Count - 1].Datum.Substring(0, 2);
             int kolkoVymazadOdKonca = 0;
             for (int i = tabulkaZWebStranky.Count - 1; i >= 0; i--)
             {
-                if (tabulkaZWebStranky[i].Datum.Substring(0, 2).Equals(poslednyDen)) {
+                if (tabulkaZWebStranky[i].Datum.Substring(0, 2).Equals(poslednyDen))
+                {
                     kolkoVymazadOdKonca++;
                 }
                 else
@@ -251,9 +257,10 @@ namespace Semes_01
                     tabulkaZWebStranky[i].Typ = "prichod";
                 }
 
-            }      
+            }
         }
-        public void naplnTypZaznamuSubor() {
+        public void naplnTypZaznamuSubor()
+        {
             for (int i = 0; i < TabulkaZoSuboru.Count; i++)
             {
                 for (int j = i - 1; j >= 0; j--)
@@ -281,7 +288,8 @@ namespace Semes_01
 
             }
         }
-        public void clearData() {
+        public void clearData()
+        {
             TabulkaZoSuboru.Clear();
             tabulkaZWebStranky.Clear();
         }
