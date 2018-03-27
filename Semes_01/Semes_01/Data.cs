@@ -4,9 +4,7 @@ using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using HtmlAgilityPack;
-using OpenQA.Selenium.Support.UI;
 using System.Text.RegularExpressions;
-using System.Globalization;
 using System.Reflection;
 
 namespace Semes_01

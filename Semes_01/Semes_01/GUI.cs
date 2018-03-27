@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -26,6 +17,7 @@ namespace Semes_01
 
         private void label1_Click(object sender, EventArgs e)
         {
+
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Title = "Browse";
             fileDialog.Filter = "html files (*.html)|*.html";
@@ -59,6 +51,8 @@ namespace Semes_01
         private void label2_Click(object sender, EventArgs e)
         {
             label2.Enabled = false;
+            label1.Enabled = false;
+            label3.Enabled = false;
             ld.nacitajStranku();
             MessageBox.Show("stranka uspesne nacitana");
             ld.rozparsuj_WebStranku();
@@ -67,6 +61,8 @@ namespace Semes_01
             db.insertData(ld.TabulkaZWebStranky);
             MessageBox.Show("stranka insertnute");
             ld.clearData();
+            label3.Enabled = true;
+            label1.Enabled = true;
             label2.Enabled = true;
         }
     }
