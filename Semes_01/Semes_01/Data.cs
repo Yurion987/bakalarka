@@ -7,6 +7,7 @@ using HtmlAgilityPack;
 using OpenQA.Selenium.Support.UI;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Reflection;
 
 namespace Semes_01
 {
@@ -20,6 +21,7 @@ namespace Semes_01
 
         public List<Zaznam> TabulkaZoSuboru { get => tabulkaZoSuboru; set => tabulkaZoSuboru = value; }
         public List<Zaznam> TabulkaZWebStranky { get => tabulkaZWebStranky; set => tabulkaZWebStranky = value; }
+        public IWebDriver Driver { get => driver; set => driver = value; }
 
         public LoadData()
         {
@@ -31,45 +33,50 @@ namespace Semes_01
 
         public void parsingTable(string cesta)
         {
-            HtmlDocument htmlDoc = new HtmlDocument();
-            string html = System.IO.File.ReadAllText(@cesta);
-            htmlDoc.LoadHtml(html);
-            foreach (HtmlNode row in htmlDoc.DocumentNode.SelectNodes("/html/body/table/tr").Skip(1))
-            {
-                int stop = 0;
-                string meno = "";
-                string cas = "";
-                foreach (HtmlNode cell in row.SelectNodes("th|td").Skip(1))
-                {      
-                    if (stop != 2)
-                    {
-                        string bunka = cell.InnerHtml;
-                        if (stop == 1)
-                        {
-                            if (!bunka.Contains("ústredňa"))
-                            {
-                                meno = bunka.Substring(bunka.IndexOf(":") + 2);
-                                // bunka.Length - bunka.IndexOf(":") - 2
-                            }
-                        }
-                        else {
-                           cas = bunka;
-                        }                       
 
-                        stop++;
-                    }
-                    else
+
+                HtmlDocument htmlDoc = new HtmlDocument();
+                string html = System.IO.File.ReadAllText(@cesta);
+                htmlDoc.LoadHtml(html);
+                foreach (HtmlNode row in htmlDoc.DocumentNode.SelectNodes("/html/body/table/tr").Skip(1))
+                {
+                    int stop = 0;
+                    string meno = "";
+                    string cas = "";
+                    foreach (HtmlNode cell in row.SelectNodes("th|td").Skip(1))
                     {
-                        if (!meno.Equals("")) {
-                            string datum = formatuj_Datum(cas.Substring(0, cas.IndexOf(":") - 2));
-                            cas = cas.Substring(cas.Length - 8,5);
-                            if (cas[0] == ' ') cas = "0" + cas.Substring(1);
-                            tabulkaZoSuboru.Add(new Zaznam(meno, datum, cas,""));
-                            break;
+                        if (stop != 2)
+                        {
+                            string bunka = cell.InnerHtml;
+                            if (stop == 1)
+                            {
+                                if (!bunka.Contains("ústredňa"))
+                                {
+                                    meno = bunka.Substring(bunka.IndexOf(":") + 2);
+                                    // bunka.Length - bunka.IndexOf(":") - 2
+                                }
+                            }
+                            else
+                            {
+                                cas = bunka;
+                            }
+
+                            stop++;
                         }
-                      
+                        else
+                        {
+                            if (!meno.Equals(""))
+                            {
+                                string datum = formatuj_Datum(cas.Substring(0, cas.IndexOf(":") - 2));
+                                cas = cas.Substring(cas.Length - 8, 5);
+                                if (cas[0] == ' ') cas = "0" + cas.Substring(1);
+                                tabulkaZoSuboru.Add(new Zaznam(meno, datum, cas, ""));
+                                break;
+                            }
+
+                        }
                     }
-                }
+
                 
             }
         }
@@ -108,9 +115,10 @@ namespace Semes_01
         {
             int pocetLoadZaznamov = 4;
             if (driver == null) {
+                var cestaDoGecko = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
                 FirefoxOptions fo = new FirefoxOptions();
                 fo.AddArgument("--headless");
-                driver = new FirefoxDriver(fo);
+                driver = new FirefoxDriver(cestaDoGecko, fo);
                 driver.Navigate().GoToUrl("https://www.jablonet.net/");
                 driver.FindElement(By.Id("login-opener")).Click();
                 driver.FindElement(By.Id("login-email")).SendKeys("uhrin9@stud.uniza.sk");

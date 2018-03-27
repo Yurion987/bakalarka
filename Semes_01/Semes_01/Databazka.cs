@@ -51,6 +51,7 @@ namespace Semes_01
 
 
         }
+        
         public void odpoj() {
             conection.Clone();
         }
